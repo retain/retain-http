@@ -24,5 +24,11 @@
   "dependencies": {
     "q": "~1.0.0",
     "superagent": "~0.16.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.0",
+    "istanbul": "~0.2.4",
+    "coveralls": "~2.6.1",
+    "chai": "~1.8.1"
   }
 }

@@ -76,5 +76,24 @@ app.delete("/movies/:id", function(req, res)
   res.send({});
 })
 
+app.get("/movies/:id", function(req, res)
+{
+  var id = req.params.id;
+  var found = null;
+
+  for(var i = 0; i < records.length; i++)
+  {
+    if(records[i].id == id)
+    {
+      found = records[i];
+    }
+  }
+
+  if(found)
+    res.send(found);
+  else
+    res.send(500, { error: 'something blew up' });
+});
+
 app.listen(3000);
 console.log('Listening on port 3000');

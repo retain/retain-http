@@ -72,4 +72,18 @@ describe("RetainAjax", function()
 
   });
 
+  it("it should find a movie by ID", function(done)
+  {
+    var id = 2;
+
+    Movies.find(2, function(res, err)
+    {
+      if(res)
+      {
+        done();
+      }
+    });
+
+  });
+
 });

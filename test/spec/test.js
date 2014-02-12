@@ -8,7 +8,6 @@ describe("RetainAjax", function()
 {
   before(function()
   {
-    console.log("server", server);
     server.start();
   });
 

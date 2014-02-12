@@ -95,5 +95,8 @@ app.get("/movies/:id", function(req, res)
     res.send(500, { error: 'something blew up' });
 });
 
-app.listen(3000);
-console.log('Listening on port 3000');
+exports.start = function()
+{
+  app.listen(3000);
+  console.log('Listening on port 3000');
+}

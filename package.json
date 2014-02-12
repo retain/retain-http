@@ -4,7 +4,7 @@
   "description": "Retain webservice storage plugin",
   "main": "lib/index.js",
   "scripts": {
-    "test": "make server & make test"
+    "test": "make test"
   },
   "repository": {
     "type": "git",

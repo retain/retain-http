@@ -1,9 +1,16 @@
 var retain = require("retain");
+var server = require("../fixtures/server")
 var retainAjax = require("../../lib/index");
 var assert = require("chai").assert;
 
+
 describe("RetainAjax", function()
 {
+  before(function()
+  {
+    console.log("server", server);
+    server.start();
+  });
 
   var Movies = retain();
   var enterTheVoid = null;

@@ -92,4 +92,65 @@ describe("RetainAjax", function()
 
   });
 
+  it("it should add retain-ajax with errors", function(done)
+  {
+    Movies.use(retainAjax, {
+      url: "http://localhost:3000/movies2"
+    })
+
+    done();
+  })
+
+  it("it should throw an error when all rejects", function(done)
+  {
+    Movies.all(function(res, err)
+    {
+      if(err)
+      {
+        done();
+      }
+
+    });
+  });
+
+  it("it should throw an error when creating a movie", function(done)
+  {
+    enterTheVoid = Movies.new(function(res, err)
+    {
+      if(err)
+      {
+        done();
+      }
+    });
+  });
+
+  it("it should throw an error when setting the movie properties", function(done)
+  {
+    var movie = Movies.find(2);
+
+    movie.set({name:"Enter the Void", watched: true},function(res, err)
+    {
+      if(err)
+      {
+        done();
+      }
+    });
+
+  });
+
+  it("it should throw an error when removing the movie", function(done)
+  {
+    var movie = Movies.find(2);
+
+    movie.remove(function(res, err)
+    {
+      if(err)
+      {
+        done();
+      }
+    });
+
+  });
+
+
 });

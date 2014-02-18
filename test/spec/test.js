@@ -52,7 +52,7 @@ describe("RetainAjax", function()
 
   it("it should set the movie properties", function(done)
   {
-    var movie = Movies.find(Movies.all().length -1);
+    var movie = Movies.find(1);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)
     {
@@ -66,7 +66,7 @@ describe("RetainAjax", function()
 
   it("it should delete the movie", function(done)
   {
-    var movie = Movies.find(Movies.all().length -1);
+    var movie = Movies.find(1);
 
     movie.remove(function(res, err)
     {

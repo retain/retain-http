@@ -1,6 +1,6 @@
 {
   "name": "retain-ajax",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Retain webservice storage plugin",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,8 @@
   "homepage": "https://github.com/giuliandrimba/retain-ajax",
   "dependencies": {
     "q": "~1.0.0",
-    "superagent": "~0.16.0"
+    "superagent": "~0.16.0",
+    "retain": "~0.2.1"
   },
   "devDependencies": {
     "mocha": "~1.17.0",

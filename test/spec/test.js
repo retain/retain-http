@@ -52,7 +52,6 @@ describe("RetainAjax", function()
 
   it("it should set the movie properties", function(done)
   {
-    console.log("msg", Movies.all());
     var movie = Movies.find(1);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)

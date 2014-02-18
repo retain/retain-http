@@ -1,6 +1,6 @@
 {
   "name": "retain-ajax",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Retain webservice storage plugin",
   "main": "lib/index.js",
   "scripts": {

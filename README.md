@@ -1,4 +1,4 @@
-retain-ajax
+![Retain-ajax](assets/logo.jpg)
 ===========
 
 [Retain](https://github.com/giuliandrimba/retain) webservice storage plugin

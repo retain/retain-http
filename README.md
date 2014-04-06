@@ -46,7 +46,7 @@ To run the tests in the server:
 
 To run the tests in the browser:
 
-> initialize the server where the data will be requested:
+> Initialize the server where the data will be requested:
 
 ` make server`
 
@@ -54,3 +54,4 @@ To run the tests in the browser:
 
 ` make test-browser`
 
+Visit `localhost:4000/` in the browser.

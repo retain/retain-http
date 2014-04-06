@@ -25,13 +25,10 @@ function find(id)
   return record;
 }
 
-app.get('*', function(req, res, next){
-  if (!req.get('Origin')) return next();
-  res.set('Access-Control-Allow-Origin', req.get('Origin'));
-  res.set('Access-Control-Allow-Credentials', 'true');
-  res.set('Access-Control-Allow-Methods', 'POST');
-  res.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
-  if ('OPTIONS' == req.method) return res.send(200);
+app.all('*', function(req, res, next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   next();
 });
 
@@ -110,3 +107,6 @@ exports.start = function()
   app.listen(3000);
   console.log('Listening on port 3000');
 }
+
+if(process.argv[2] === "--start")
+  exports.start();

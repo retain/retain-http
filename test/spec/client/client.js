@@ -1,8 +1,8 @@
 var retain = require("retain");
 var retainAjax = require("../../../lib/client");
-var assert = require("chai").assert;
+var assert = window.chai.assert;
 var shared = require("./../shared")
-var mocha = require("mocha");
+var mocha = window.mocha;
 
 mocha.setup('bdd')
 

@@ -1,31 +1,26 @@
 TESTS = test/spec/server
-TESTS_CLIENT = test/spec/server
 REPORTER = spec
 MOCHA = ./node_modules/mocha/bin/mocha
 _MOCHA = ./node_modules/mocha/bin/_mocha
 ISTANBUL = ./node_modules/istanbul/lib/cli.js
 
-MOCHA_PHANTOM = ./node_modules/mocha-phantomjs/bin/mocha-phantomjs
 BROWSERIFY = ./node_modules/browserify/bin/cmd.js
 
 server:
-	node test/fixtures/server/server.js
+	node test/fixtures/server/server.js --start
 
 client:
 	node test/fixtures/client/server.js
 
-test: test-mocha
+test: test-server
 
-test-browser: compile test-phantom
+test-browser: compile client
 
-test-mocha:
+test-server:
 	$(MOCHA) --timeout 200 $(TESTS) --reporter spec
 
 compile:
 	$(BROWSERIFY) test/spec/client/client.js -o test/fixtures/client/index.js
-
-test-phantom:
-	$(MOCHA) --timeout 200 $(TESTS_CLIENT) --reporter spec
 
 test-cov: istanbul
 

@@ -25,7 +25,7 @@ compile:
 test-cov: istanbul
 
 istanbul:
-	$(ISTANBUL) cover $(_MOCHA) -- -R spec test/spec
+	$(ISTANBUL) cover $(_MOCHA) -- -R spec test/spec/server
 
 coveralls:
 	cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

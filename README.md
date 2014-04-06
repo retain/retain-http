@@ -1,9 +1,9 @@
-![Retain-ajax](assets/logo.jpg)
+![retain-http](assets/logo.jpg)
 ===========
 
 [Retain](https://github.com/retain/retain) REST webservice plugin
 
-[![Build Status](https://travis-ci.org/retain/retain-ajax.png?branch=master)](https://travis-ci.org/retain/retain-ajax) [![Coverage Status](http://coveralls.io/repos/retain/retain-ajax/badge.png)](https://coveralls.io/r/retain/retain-ajax)
+[![Build Status](https://travis-ci.org/retain/retain-http.png?branch=master)](https://travis-ci.org/retain/retain-http) [![Coverage Status](http://coveralls.io/repos/retain/retain-http/badge.png)](https://coveralls.io/r/retain/retain-http)
 
 ### Example
 
@@ -11,7 +11,7 @@ To start saving the __Retain__ data in a REST webservice, simply inject the plug
 
 ``` javascript
 var retain = require("retain");
-var retainAjax = require("retain-ajax");
+var retainAjax = require("retain-http");
 
 var Movies = retain();
 

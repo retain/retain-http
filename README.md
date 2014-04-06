@@ -1,9 +1,9 @@
 ![Retain-ajax](assets/logo.jpg)
 ===========
 
-[Retain](https://github.com/giuliandrimba/retain) REST webservice plugin
+[Retain](https://github.com/retain/retain) REST webservice plugin
 
-[![Build Status](https://travis-ci.org/giuliandrimba/retain-ajax.png?branch=master)](https://travis-ci.org/giuliandrimba/retain-ajax) [![Coverage Status](http://coveralls.io/repos/giuliandrimba/retain-ajax/badge.png)](https://coveralls.io/r/giuliandrimba/retain-ajax)
+[![Build Status](https://travis-ci.org/retain/retain-ajax.png?branch=master)](https://travis-ci.org/retain/retain-ajax) [![Coverage Status](http://coveralls.io/repos/retain/retain-ajax/badge.png)](https://coveralls.io/r/retain/retain-ajax)
 
 ### Example
 
@@ -47,8 +47,10 @@ To run the tests in the server:
 To run the tests in the browser:
 
 > initialize the server where the data will be requested:
+
 ` make server`
 
 > Initialize the server to see the tests outputs
+
 ` make test-browser`
 

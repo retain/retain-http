@@ -1,6 +1,6 @@
 {
-  "name": "retain-ajax",
-  "version": "0.2.1",
+  "name": "retain-http",
+  "version": "0.2.2",
   "description": "Retain webservice storage plugin",
   "main": "lib/server.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/giuliandrimba/retain-ajax.git"
+    "url": "git://github.com/retain/retain-http.git"
   },
   "keywords": [
     "retain",
@@ -18,9 +18,9 @@
   "author": "Giulian Drimba",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/giuliandrimba/retain-ajax/issues"
+    "url": "https://github.com/retain/retain-http/issues"
   },
-  "homepage": "https://github.com/giuliandrimba/retain-ajax",
+  "homepage": "https://github.com/retain/retain-http",
   "dependencies": {
     "q": "~1.0.0",
     "superagent": "~0.16.0",

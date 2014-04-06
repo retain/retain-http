@@ -38,3 +38,17 @@ To create a plugin, it is necessary to implement each of the following __Retain_
 
 Each of theses methods must return a promise.
 
+### Tests
+
+To run the tests in the server:
+
+`make test`
+
+To run the tests in the browser:
+
+> initialize the server where the data will be requested:
+` make server`
+
+> Initialize the server to see the tests outputs
+` make test-browser`
+

@@ -1,27 +1,8 @@
-var retain = require("retain");
-var server = require("../fixtures/server")
-var retainAjax = require("../../lib/index");
-var assert = require("chai").assert;
-
-
-describe("RetainAjax", function()
+exports.runTests = function()
 {
-  before(function()
-  {
-    server.start();
-  });
-
-  var Movies = retain();
-  var enterTheVoid = null;
-
-  Movies.attrs({
-    name:String,
-    watched:Boolean
-  })
-
   it("it should add retain-ajax as a plugin", function(done)
   {
-    Movies.use(retainAjax, {
+    this.Movies.use(this.retainAjax, {
       url: "http://localhost:3000/movies"
     })
 
@@ -30,7 +11,7 @@ describe("RetainAjax", function()
 
   it("it should get all the movies", function(done)
   {
-    Movies.all(function(res, err)
+    this.Movies.all(function(res, err)
     {
       if(res)
       {
@@ -41,7 +22,7 @@ describe("RetainAjax", function()
 
   it("it should create a movie", function(done)
   {
-    enterTheVoid = Movies.new(function(res, err)
+    this.enterTheVoid = this.Movies.new(function(res, err)
     {
       if(res)
       {
@@ -52,7 +33,7 @@ describe("RetainAjax", function()
 
   it("it should set the movie properties", function(done)
   {
-    var movie = Movies.find(1);
+    var movie = this.Movies.find(1);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)
     {
@@ -66,7 +47,7 @@ describe("RetainAjax", function()
 
   it("it should delete the movie", function(done)
   {
-    var movie = Movies.find(1);
+    var movie = this.Movies.find(1);
 
     movie.remove(function(res, err)
     {
@@ -82,7 +63,7 @@ describe("RetainAjax", function()
   {
     var id = 2;
 
-    Movies.find(2, function(res, err)
+    this.Movies.find(2, function(res, err)
     {
       if(res)
       {
@@ -94,7 +75,7 @@ describe("RetainAjax", function()
 
   it("it should add retain-ajax with errors", function(done)
   {
-    Movies.use(retainAjax, {
+    this.Movies.use(this.retainAjax, {
       url: "http://localhost:3000/movies2"
     })
 
@@ -103,7 +84,7 @@ describe("RetainAjax", function()
 
   it("it should throw an error when all rejects", function(done)
   {
-    Movies.all(function(res, err)
+    this.Movies.all(function(res, err)
     {
       if(err)
       {
@@ -115,7 +96,7 @@ describe("RetainAjax", function()
 
   it("it should throw an error when creating a movie", function(done)
   {
-    enterTheVoid = Movies.new(function(res, err)
+    this.enterTheVoid = this.Movies.new(function(res, err)
     {
       if(err)
       {
@@ -126,7 +107,7 @@ describe("RetainAjax", function()
 
   it("it should throw an error when setting the movie properties", function(done)
   {
-    var movie = Movies.find(2);
+    var movie = this.Movies.find(2);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)
     {
@@ -140,7 +121,7 @@ describe("RetainAjax", function()
 
   it("it should throw an error when removing the movie", function(done)
   {
-    var movie = Movies.find(2);
+    var movie = this.Movies.find(2);
 
     movie.remove(function(res, err)
     {
@@ -151,6 +132,4 @@ describe("RetainAjax", function()
     });
 
   });
-
-
-});
+}

@@ -25,6 +25,16 @@ function find(id)
   return record;
 }
 
+app.get('*', function(req, res, next){
+  if (!req.get('Origin')) return next();
+  res.set('Access-Control-Allow-Origin', req.get('Origin'));
+  res.set('Access-Control-Allow-Credentials', 'true');
+  res.set('Access-Control-Allow-Methods', 'POST');
+  res.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
+  if ('OPTIONS' == req.method) return res.send(200);
+  next();
+});
+
 app.get('/movies', function(req, res)
 {
   res.send(records);

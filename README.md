@@ -24,10 +24,12 @@ Movies.use(retainAjax, {
 
 If you want you use __retain-http__ in the browser, there are 2 options:
 
-* Require the `lib/client.js` file using the CJS signature
+* If your bundler have implemented the `package.son` (https://gist.github.com/defunctzombie/4339901)[`browser`] spec, just require the file using the `require` signature:
+  ``` javascript
+  require("retain-http");
+  ```
+* Otherwise, require the `lib/client.js` file using the CJS signature
 > using a build tool for the client (Browserify, Polvo, etc)
-
-* Insert the `retain-http.minified.js` via the `script` tag.
 
 ### Config
 

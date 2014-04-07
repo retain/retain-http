@@ -7,9 +7,6 @@ UGLIFY = ./node_modules/uglify-js/bin/uglifyjs
 
 BROWSERIFY = ./node_modules/browserify/bin/cmd.js
 
-build-client:
-	$(BROWSERIFY) lib/client.js | $(UGLIFY) -c > retain-http.minified.js
-
 server:
 	node test/fixtures/server/server.js --start
 

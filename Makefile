@@ -3,8 +3,12 @@ REPORTER = spec
 MOCHA = ./node_modules/mocha/bin/mocha
 _MOCHA = ./node_modules/mocha/bin/_mocha
 ISTANBUL = ./node_modules/istanbul/lib/cli.js
+UGLIFY = ./node_modules/uglify-js/bin/uglifyjs
 
 BROWSERIFY = ./node_modules/browserify/bin/cmd.js
+
+build-client:
+	$(BROWSERIFY) lib/client.js | $(UGLIFY) -c > retain-http.minified.js
 
 server:
 	node test/fixtures/server/server.js --start

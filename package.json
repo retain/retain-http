@@ -1,6 +1,6 @@
 {
   "name": "retain-http",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Retain webservice storage plugin",
   "main": "lib/server.js",
   "browser": "lib/client.js",

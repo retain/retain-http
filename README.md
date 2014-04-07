@@ -33,7 +33,7 @@ If you want you use __retain-http__ in the browser, there are 2 options:
 
   require("retain-http");
   ```
-  * [Browserify](http://browserify.org/) support this spec
+  * [Browserify](https://github.com/substack/node-browserify#browser-field) support this spec
 * Otherwise, require the `lib/client.js` file using the CJS signature
 
   > You can map the `retain` name to the `lib/client.js` file using your `bundler` mapping option.

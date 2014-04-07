@@ -20,12 +20,13 @@ Movies.use(retainAjax, {
     })
 ```
 
-#### Client version
+### Client version
 
 If you want you use __retain-http__ in the browser, there are 2 options:
 
 * Require the `lib/client.js` file using the CJS signature
-  > using a build tool for the client (Browserify, Polvo, etc)
+> using a build tool for the client (Browserify, Polvo, etc)
+
 * Insert the `retain-http.minified.js` via the `script` tag.
 
 ### Config

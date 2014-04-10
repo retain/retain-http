@@ -20,6 +20,24 @@ Movies.use(retainAjax, {
     })
 ```
 
+### Installation
+
+`npm install retain-http`
+
+### Client version
+
+If you want you use __retain-http__ in the browser, there are 2 options:
+
+* If your bundler have implemented the `package.son` [`browser`](https://gist.github.com/defunctzombie/4339901) spec, just require the file using the `require` signature:
+  ``` javascript
+
+  require("retain-http");
+  ```
+  * [Browserify](https://github.com/substack/node-browserify#browser-field) support this spec
+* Otherwise, require the `lib/client.js` file using the CJS signature
+
+  > You can map the `retain-http` name to the `lib/client.js` file using your `bundler` mapping option, so you can require it using the default signature `require('retain-http')`
+
 ### Config
 
 * __url__: REST URL that will be used to save the data.

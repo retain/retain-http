@@ -3,6 +3,7 @@ REPORTER = spec
 MOCHA = ./node_modules/mocha/bin/mocha
 _MOCHA = ./node_modules/mocha/bin/_mocha
 ISTANBUL = ./node_modules/istanbul/lib/cli.js
+UGLIFY = ./node_modules/uglify-js/bin/uglifyjs
 
 BROWSERIFY = ./node_modules/browserify/bin/cmd.js
 

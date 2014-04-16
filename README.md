@@ -16,7 +16,7 @@ var retainAjax = require("retain-http");
 var Movies = retain();
 
 Movies.use(retainAjax, {
-      url: "http://localhost:3000/movies"
+      rest: "http://localhost:3000/movies"
     })
 ```
 
@@ -40,7 +40,8 @@ If you want you use __retain-http__ in the browser, there are 2 options:
 
 ### Config
 
-* __url__: REST URL that will be used to save the data.
+* __rest__: REST URL that will be used to save the data.
+* __search__: URL that will be used to search the data (sending the attributes filter as parameter).
 
 ### Creating a plugin
 

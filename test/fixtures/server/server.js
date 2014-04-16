@@ -37,6 +37,11 @@ app.get('/movies', function(req, res)
   res.send(records);
 });
 
+app.get('/movies/search', function(req, res)
+{
+  res.send(records);
+});
+
 app.post('/movies', function(req, res)
 {
   var record = req.body;

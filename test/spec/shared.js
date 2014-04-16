@@ -3,7 +3,8 @@ exports.runTests = function()
   it("it should add retain-ajax as a plugin", function(done)
   {
     this.Movies.use(this.retainAjax, {
-      url: "http://localhost:3000/movies"
+      rest: "http://localhost:3000/movies",
+      search: "http://localhost:3000/movies/"
     })
 
     done();
@@ -33,7 +34,7 @@ exports.runTests = function()
 
   it("it should set the movie properties", function(done)
   {
-    var movie = this.Movies.find(1);
+    var movie = this.Movies.find(4);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)
     {
@@ -76,7 +77,7 @@ exports.runTests = function()
   it("it should add retain-ajax with errors", function(done)
   {
     this.Movies.use(this.retainAjax, {
-      url: "http://localhost:3000/movies2"
+      rest: "http://localhost:3000/movies2"
     })
 
     done();

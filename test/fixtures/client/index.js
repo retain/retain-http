@@ -9,14 +9,17 @@ module.exports = function()
 }
 
 
-},{"./../node_modules/superagent/lib/client":7,"./index":2,"q":4}],2:[function(require,module,exports){
+},{"./../node_modules/superagent/lib/client":8,"./index":2,"q":4}],2:[function(require,module,exports){
 module.exports = function(Q, request)
 {
   "use strict"
 
   var api = {}
 
-  api.config = {url:""}
+  api.config = {
+    rest:"",
+    search:""
+  }
   api.new = _new;
   api.set = _set;
   api.find = _find;
@@ -25,15 +28,16 @@ module.exports = function(Q, request)
 
   function _new(record)
   {
+
     var deferred = Q.defer();
 
     request
-      .post(this.config.url)
+      .post(this.config.rest)
       .send(record)
       .set('Accept', 'application/json')
       .end(function(error, res)
       {
-        _handler(deferred, res, record);
+        _handler(deferred, res);
       });
 
     return deferred.promise;
@@ -44,23 +48,38 @@ module.exports = function(Q, request)
     var deferred = Q.defer();
 
     request
-      .post(this.config.url+"/"+record.id)
+      .post(this.config.rest+"/"+record.id)
       .send(record)
       .set('Accept', 'application/json')
       .end(function(error, res)
       {
-        _handler(deferred, res, record);
+        _handler(deferred, res);
       });
 
     return deferred.promise;
   }
 
-  function _find(record)
+  function _find(id)
   {
     var deferred = Q.defer();
 
     request
-      .get(this.config.url+"/"+record.id)
+      .get(this.config.rest+"/"+id)
+      .set('Accept', 'application/json')
+      .end(function(error, res)
+      {
+        _handler(deferred, res);
+      });
+
+    return deferred.promise;
+  }
+
+  function _search(record)
+  {
+    var deferred = Q.defer();
+
+    request
+      .get(this.config.search)
       .set('Accept', 'application/json')
       .end(function(error, res)
       {
@@ -74,19 +93,20 @@ module.exports = function(Q, request)
   {
     var deferred = Q.defer();
 
-    request.get(this.config.url, function(res)
+    request.get(this.config.rest, function(res)
     {
+      console.log("ALL", res.error);
       _handler(deferred, res);
     });
 
     return deferred.promise;
   }
 
-  function _remove(record)
+  function _remove(id)
   {
     var deferred = Q.defer();
     request
-      .del(this.config.url + "/" + record.id)
+      .del(this.config.rest + "/" + id)
       .set('Accept', 'application/json')
       .end(function(res)
       {
@@ -104,9 +124,6 @@ module.exports = function(Q, request)
     } 
     else 
     {
-      if(record)
-        _update(res.body, record);
-
       deferred.resolve(res.body);
     }
   }
@@ -2090,8 +2107,8 @@ return Q;
 
 });
 
-}).call(this,require("/Users/giuliandrimba/codes/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/giuliandrimba/codes/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":3}],5:[function(require,module,exports){
+}).call(this,require("/Users/giuliandrimba/code/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
+},{"/Users/giuliandrimba/code/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":3}],5:[function(require,module,exports){
 "use strict"
 
 var Q = require("q");
@@ -2162,13 +2179,13 @@ Retain._REMOVED = 0
 /**
 * Changes the name of the 'ID' property.
 *
-* @attribute id_prop 
+* @attribute idProp 
 * @example
   ```
-    Movies.id_prop = "_id"; // Useful when working with data coming from MongoDB (it uses '_id')
+    Movies.idProp = "_id"; // Useful when working with data coming from MongoDB (it uses '_id')
   ```
 */
-Retain.id_prop = "id";
+Retain.idProp = "id";
 
 /**
 * Adds a plugin middleware to the Model
@@ -2240,8 +2257,13 @@ Retain.attrs = function(props)
     })
   ```
 */
-Retain.new = function (callback)
+Retain.new = function (props, callback)
 {
+  var fn = callback;
+
+  if(typeof props === "function")
+    fn = props;
+
   var key, record, value;
 
   record = new this;
@@ -2251,9 +2273,35 @@ Retain.new = function (callback)
   this._TOTAL = this._records.length
   record._cid = this._TOTAL + this._REMOVED;
 
-  this._run_plugins("new", record, callback);
+  if(typeof props === "object")
+    record.set(props);
+
+  this._newRemotelly(record, fn);
 
   return record;
+}
+
+Retain._newRemotelly = function(record, callback)
+{
+  var self = this;
+  if(callback)
+  {
+    this._runPlugins("new", record._keys, function(res, err)
+      {
+        var rec = res;
+
+        if(rec)
+        {
+          rec = record.set(res);
+        }
+        self.emit("new", record);
+        callback(rec, err)
+      });
+  }
+  else
+  {
+    self.emit("new", record);
+  }
 }
 
 /**
@@ -2282,17 +2330,46 @@ Retain.new = function (callback)
 */
 Retain.prototype.set = function(props, callback)
 {
-
   var args = 1 <= props.length ? [].slice.call(props, 0) : [];
 
   for(var prop in props)
   {
-    this._validate_prop(prop, props[prop]);
+    this._validateProp(prop, props[prop]);
   }
 
-  this.constructor._run_plugins("set", this, callback);
+  this._setRemotelly(props, this, callback);
 
   return this;
+}
+
+Retain.prototype._setRemotelly = function(props, record, callback)
+{
+  var self = this;
+  var params;
+
+  params = props;
+  params["id"] = record[this.constructor.idProp];
+
+  if(callback)
+  {
+    this.constructor._runPlugins("set", params, function(res, err)
+      {
+
+        var rec = res;
+
+        if(res)
+        {
+          rec = self.set(res);
+        }
+        
+        self.emit("change", record);
+        callback(rec, err)
+      });
+  }
+  else
+  {
+    self.emit("change", record);
+  }
 }
 
 /**
@@ -2340,31 +2417,137 @@ Retain.prototype.get = function(prop)
 Retain.find = function(id, callback)
 {
   var found = null;
-  var record = {id:id};
+  var self = this;
 
-  // Search by ID
-  for(var i = 0, total = this._records.length; i < total; i++)
-  {
-    if(parseInt(this._records[i][this.id_prop]) === id)
-    {
-      found = this._records[i];
-    }
-  }
+  var filter = {};
+  filter[this.idProp] = id;
+
+  // Search by YD
+  found = this._findWhere(filter);
 
   // Search by CID
-  for(i = 0; i < total; i++)
-  {
-    if(parseInt(this._records[i]["_cid"]) === id && !found)
-    {
-      found = this._records[i];
-    }
+  if(!found.length)
+  { 
+    filter = {};
+    filter["_cid"] = id
+    found = this._findWhere(filter)
   }
 
-  if(found)
-    record = found;
+  if(callback)
+  {
+    this._findRemotelly(id, callback);
+  }
 
-  this._run_plugins("find", record, callback);
+  return found[0];
+}
+
+Retain._findRemotelly = function(id, callback)
+{
+  var self = this;
+
+  this._runPlugins("find", id, function(res, err)
+  {
+    var rec = res;
+
+    if(res)
+    {
+      var record = self.find(res[self.idProp]);
+
+      if(record)
+      {
+        record.set(res);
+      }
+      else
+      {
+        var newRecord = self.new()
+        newRecord.set(res);
+      }
+    }
+    
+    callback(res, err)
+
+  });
+}
+
+/**
+* Searchs for model instances based on the specified properties.
+*
+* If a callback is suplied, and there is at least one plugin attached to the model, searchs the records remotelly.
+* @method search
+* @static
+* @param {Object} Properties.
+* @param {Function} [callback] If suplied, it will be called when the remote record was retrieved.
+* @return {Array} Array containing the found records.
+* @example
+  ```
+    var eyesWideShut = Movies.new();
+    eyesWideShut.set({name:"Eyes Wide Shut"});
+    
+    var pulpFiction = Movies.new();
+    pulpFiction.set({name:"Pulp Fiction"});
+
+    Movies.search({name:"Pulp Fiction"}) // Returns an array '[<eyesWideShutInstance>]'
+
+    // Searchs remotelly for records with the name 'Pulp Fiction'
+    Movies.find({name:"Pulp Fiction"}, function(records, err)
+    {
+      
+    });
+
+  ```
+*/
+Retain.search = function(props, callback)
+{
+  var found = null;
+  var filter = props;
+
+  found = this._findWhere(filter);
+
+  if(callback)
+  {
+    this._searchRemotelly(props, callback);
+  }
+
+  if(found.length === 1)
+    return found[0];
+
   return found;
+}
+
+Retain._searchRemotelly = function(props, callback)
+{
+  var self = this;
+  var recordExists;
+
+  this._runPlugins("search", props, function(res, err)
+  {
+    var results = res;
+    var filter = {};
+    var record = null;
+    var recordExists;
+
+    for(var i = 0, total = results.length; i < total; i++)
+    {
+      filter[self.idProp] = results[i][self.idProp];
+
+      recordExists = self._findWhere(filter);
+
+      if(recordExists[0])
+      {
+        recordExists[0].set(results[i]);
+      }
+      else
+      {
+        record = this.new()
+        record.set(results[i]);
+      }
+    }
+
+    if(res.length === 1)
+      callback(res[0], err)
+    else
+      callback(res, err)
+  })
 }
 
 /**
@@ -2388,15 +2571,43 @@ Retain.find = function(id, callback)
 */
 Retain.all = function(callback)
 {
-  this._run_plugins("all", this._records, callback);
+  this._allRemotelly(callback);
+
   return this._records;
+}
+
+Retain._allRemotelly = function(callback)
+{
+  var self = this;
+
+  if(callback)
+  {
+    this._runPlugins("all", this._records, function(res, err)
+      {
+        if(res)
+        {
+          self._records = [];
+
+          for(var i = 0, total = res.length; i < total; i++)
+          {
+            var record = self.new(res[i])
+          }
+          callback(self._records, err)
+        }
+        else
+        {
+          callback(res, err)
+        }
+        
+      });
+  }
 }
 
 /**
 * Removes/deletes the record locally.
 *
 * If a callback is suplied, and there is at least one plugin attached to the model, removes the record remotelly.
-* @method find
+* @method remove
 * @param {Function} [callback] If suplied, it will be called when the record was removed/deleted remotelly.
 * @example
   ```
@@ -2418,6 +2629,7 @@ Retain.prototype.remove = function(callback)
 {
   var cid = this._cid;
   var record = null;
+  var self = this;
 
   var total = this.constructor._records.length;
 
@@ -2434,7 +2646,18 @@ Retain.prototype.remove = function(callback)
     }
   };
 
-  this.constructor._run_plugins("remove", this, callback);
+  if(callback)
+  {
+    this.constructor._runPlugins("remove", this[this.constructor.idProp], function(res, err)
+      {
+        self.emit("remove", self);
+        callback(res, err);
+      });
+  }
+  else
+  {
+    self.emit("remove", self);
+  }
 }
 
 /**
@@ -2458,17 +2681,17 @@ Retain.prototype.remove = function(callback)
 */
 Retain.prototype.save = function(callback)
 {
-  var that = this;
+  var self = this;
 
   if(this._isNew() && !this._isRemoved())
   {
-    that.constructor._run_plugins("new", that, function()
+    self.constructor._runPlugins("new", self, function()
     {
-      var keys = Object.keys(that._keys);
+      var keys = Object.keys(self._keys);
 
       if(keys.length)
       {
-        that.constructor._run_plugins("set", that, function()
+        self.constructor._runPlugins("set", self, function()
         {
           if(callback)
           {
@@ -2490,7 +2713,7 @@ Retain.prototype.save = function(callback)
   }
   else if(!this._isRemoved())
   {
-    that.constructor._run_plugins("set", that, function()
+    self.constructor._runPlugins("set", self, function()
     {
       if(callback)
         callback()
@@ -2524,27 +2747,22 @@ Retain.prototype._isNew = function()
     return false;
 }
 
-Retain._run_plugins = function(method, initialValue, callback)
+Retain._runPlugins = function(method, initialValue, callback)
 {
-  if(callback)
-  {
-    // Reference https://github.com/kriskowal/q#sequences
-    var plugins = this._get_plugins(method);
-    var self = this;
+  // Reference https://github.com/kriskowal/q#sequences
+  var plugins = this._getPlugins(method);
+  var self = this;
 
-    plugins.reduce(Q.when, Q(initialValue))
-      .then(function(res)
-      {
-        self.emit("change", res);
-        self.emit(method, res);
-        callback(res,null);
-      })
-      .fail(function(err)
-      {
-        self.emit("error", err);
-        callback(null,err)
-      });
-  }
+  plugins.reduce(Q.when, Q(initialValue))
+    .then(function(res)
+    {
+      callback(res,null);
+    })
+    .fail(function(err)
+    {
+      self.emit("error", err);
+      callback(null,err)
+    });
 }
 
 Retain._init = function()
@@ -2554,7 +2772,7 @@ Retain._init = function()
   this._TOTAL = this._records.length
 }
 
-Retain._get_plugins = function(method)
+Retain._getPlugins = function(method)
 {
   var promises = [];
 
@@ -2573,7 +2791,7 @@ Retain.prototype._keys = {}
 
 Retain.prototype._cid = {}
 
-Retain.prototype._validate_type = function(prop, val)
+Retain.prototype._validateType = function(prop, val)
 {
   var attr = this.constructor._attrs[prop];
 
@@ -2588,6 +2806,7 @@ Retain.prototype._validate_type = function(prop, val)
       case "Number":
         return (typeof val === "number");
       case "Array":
+        return (Array.isArray(val))
       case "Object":
       case "Date":
         return (val instanceof attr);
@@ -2595,11 +2814,11 @@ Retain.prototype._validate_type = function(prop, val)
   }
 }
 
-Retain.prototype._validate_prop = function(prop, value)
+Retain.prototype._validateProp = function(prop, value)
 {
   if(this.constructor._attrs[prop])
   {
-    if(this._validate_type(prop, value))
+    if(this._validateType(prop, value))
     {
       this._keys[prop] = value;
     }
@@ -2614,7 +2833,41 @@ Retain.prototype._validate_prop = function(prop, value)
   }
 }
 
-},{"happens":6,"q":4}],6:[function(require,module,exports){
+Retain._findWhere = function(params)
+{
+  var found = [];
+
+  for(var i = 0; i < this._records.length; i++)
+  {
+    var record = this._records[i];
+
+    if(this._hasProperties(record, params))
+    {
+      found.push(record);
+    }
+  }
+
+  return found;
+}
+
+Retain._hasProperties = function(obj, props)
+{
+  if(!props["_cid"] && !props[this.idProp])
+  {
+    obj = obj._keys;
+  }
+
+  for (var prop in props) 
+  {
+    if(obj[prop] != props[prop])
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+},{"happens":6,"q":7}],6:[function(require,module,exports){
 module.exports = function(target) {
   for(var prop in Happens)
     target[prop] = Happens[prop];
@@ -2650,6 +2903,8 @@ var Happens = {
   }
 };
 },{}],7:[function(require,module,exports){
+module.exports=require(4)
+},{"/Users/giuliandrimba/code/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":3}],8:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3645,7 +3900,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":8,"reduce":9}],8:[function(require,module,exports){
+},{"emitter":9,"reduce":10}],9:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -3803,7 +4058,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -3828,7 +4083,7 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var retain = require("retain");
 var retainAjax = require("../../../lib/client");
 var assert = window.chai.assert;
@@ -3855,13 +4110,14 @@ describe("RetainAjax", function()
   shared.runTests()
 
 });
-},{"../../../lib/client":1,"./../shared":11,"retain":5}],11:[function(require,module,exports){
+},{"../../../lib/client":1,"./../shared":12,"retain":5}],12:[function(require,module,exports){
 exports.runTests = function()
 {
   it("it should add retain-ajax as a plugin", function(done)
   {
     this.Movies.use(this.retainAjax, {
-      url: "http://localhost:3000/movies"
+      rest: "http://localhost:3000/movies",
+      search: "http://localhost:3000/movies/"
     })
 
     done();
@@ -3891,7 +4147,7 @@ exports.runTests = function()
 
   it("it should set the movie properties", function(done)
   {
-    var movie = this.Movies.find(1);
+    var movie = this.Movies.find(4);
 
     movie.set({name:"Enter the Void", watched: true},function(res, err)
     {
@@ -3934,7 +4190,7 @@ exports.runTests = function()
   it("it should add retain-ajax with errors", function(done)
   {
     this.Movies.use(this.retainAjax, {
-      url: "http://localhost:3000/movies2"
+      rest: "http://localhost:3000/movies2"
     })
 
     done();
@@ -3991,4 +4247,4 @@ exports.runTests = function()
 
   });
 }
-},{}]},{},[10])
+},{}]},{},[11])

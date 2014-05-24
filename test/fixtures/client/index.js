@@ -9,7 +9,7 @@ module.exports = function()
 }
 
 
-},{"./../node_modules/superagent/lib/client":8,"./index":2,"q":4}],2:[function(require,module,exports){
+},{"./../node_modules/superagent/lib/client":7,"./index":2,"q":4}],2:[function(require,module,exports){
 module.exports = function(Q, request)
 {
   "use strict"
@@ -80,6 +80,7 @@ module.exports = function(Q, request)
 
     request
       .get(this.config.search)
+      .send(record)
       .set('Accept', 'application/json')
       .end(function(error, res)
       {
@@ -95,7 +96,6 @@ module.exports = function(Q, request)
 
     request.get(this.config.rest, function(res)
     {
-      console.log("ALL", res.error);
       _handler(deferred, res);
     });
 
@@ -2286,7 +2286,13 @@ Retain._newRemotelly = function(record, callback)
   var self = this;
   if(callback)
   {
-    this._runPlugins("new", record._keys, function(res, err)
+    var params;
+
+    params = record._keys;
+    params["id"] = record[this.constructor.idProp];
+    params["_cid"] = record._cid;
+
+    this._runPlugins("new", params, function(res, err)
       {
         var rec = res;
 
@@ -2447,6 +2453,7 @@ Retain._findRemotelly = function(id, callback)
 
   this._runPlugins("find", id, function(res, err)
   {
+
     var rec = res;
 
     if(res)
@@ -2867,12 +2874,17 @@ Retain._hasProperties = function(obj, props)
 
   return true;
 }
-},{"happens":6,"q":7}],6:[function(require,module,exports){
+},{"happens":6,"q":4}],6:[function(require,module,exports){
 module.exports = function(target) {
   for(var prop in Happens)
     target[prop] = Happens[prop];
   return target;
 };
+
+function validate(fn) {
+  if(!(fn && fn instanceof Function))
+    throw new Error(fn + 'is not a function');
+}
 
 var Happens = {
   __init: function(event) {
@@ -2881,6 +2893,7 @@ var Happens = {
   },
 
   on: function(event, fn) {
+    validate(fn);
     this.__init(event).push(fn);
   },
 
@@ -2890,21 +2903,21 @@ var Happens = {
   },
 
   once: function(event, fn) {
+    validate(fn);
     var self = this, wrapper = function() {
       self.off(event, wrapper);
       fn.apply(this, arguments);
-    }
+    };
     this.on(event, wrapper );
   },
 
   emit: function(event) {
-    var i, pool = pool = this.__init(event).slice(0);
-    for(i in pool) pool[i].apply(this, [].slice.call(arguments, 1));
+    var i, pool = this.__init(event).slice(0);
+    for(i in pool)
+      pool[i].apply(this, [].slice.call(arguments, 1));
   }
 };
 },{}],7:[function(require,module,exports){
-module.exports=require(4)
-},{"/Users/giuliandrimba/code/retain-http/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":3}],8:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3900,7 +3913,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":9,"reduce":10}],9:[function(require,module,exports){
+},{"emitter":8,"reduce":9}],8:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -4058,7 +4071,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -4083,7 +4096,7 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var retain = require("retain");
 var retainAjax = require("../../../lib/client");
 var assert = window.chai.assert;
@@ -4110,7 +4123,7 @@ describe("RetainAjax", function()
   shared.runTests()
 
 });
-},{"../../../lib/client":1,"./../shared":12,"retain":5}],12:[function(require,module,exports){
+},{"../../../lib/client":1,"./../shared":11,"retain":5}],11:[function(require,module,exports){
 exports.runTests = function()
 {
   it("it should add retain-ajax as a plugin", function(done)
@@ -4247,4 +4260,4 @@ exports.runTests = function()
 
   });
 }
-},{}]},{},[11])
+},{}]},{},[10])
